@@ -1,0 +1,57 @@
+function foo() {
+  const form = FormApp.openById("1zGahDKx9YcOJBNLTKk3NF3viT6SQGjOZBHgGvtoMbtg");
+
+  const randomSubs = [], nSubs = 117;
+  while (randomSubs.length < nSubs)
+    randomSubs.push(createRandomSubmission_(form).submit());
+}
+
+function createRandomSubmission_(form) {
+  const resp = form.createResponse();
+  const questions = form.getItems().filter(isAnswerable_);
+  questions.forEach(function (question) {
+    var answer = getRandomAnswer_(question);
+    resp.withItemResponse(answer);
+  });
+  return resp;
+}
+
+var iTypes = FormApp.ItemType;
+function isAnswerable_(item, index, allItems) {
+  const iType = item.getType();
+  switch (iType) {
+    case iTypes.MULTIPLE_CHOICE:
+    case iTypes.CHECKBOX:
+      return true;
+    default:
+      return false;
+  }
+}
+
+
+function getRandomAnswer_(q) {
+  const qType = q.getType();
+  switch (qType) {
+    case iTypes.MULTIPLE_CHOICE:
+      return getRandomMultipleChoiceAnswer_(q.asMultipleChoiceItem());
+    default:
+      throw new TypeError("Answering questions of type '" + qType + "' is not yet implemented");
+  }
+}
+
+
+function getRandomMultipleChoiceAnswer_(mcItem) {
+  Logger.log(mcItem)
+  const choices = mcItem.getChoices();
+  Logger.log(choices)
+    Logger.log(choices.length)
+  const i = Math.floor( Math.random() * (choices.length) );
+  return mcItem.createResponse((i <= choices.length) ? choices[i].getValue() : choices[0].getValue()	);
+}
+
+function getRandomMCOtherOption_(mcItem) {
+  switch (mcItem.getId()) { 
+    default:
+      throw new Error("Not Implemented Yet");
+  }
+}
